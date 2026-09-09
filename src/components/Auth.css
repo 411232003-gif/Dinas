@@ -55,8 +55,8 @@
     22px 22px 50px #c3c3c3,
     -1px -1px 1px rgba(255, 255, 255, 0.5) inset;
   z-index: 5;
-  backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .auth-page .glass-circle.back {

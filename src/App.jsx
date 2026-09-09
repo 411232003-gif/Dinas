@@ -12,6 +12,7 @@ import PhotoGallery from './components/PhotoGallery';
 import Chat from './components/Chat';
 import Wishlist from './components/Wishlist';
 import Notifications from './components/Notifications';
+import LoadingScreen from './components/LoadingScreen';
 import { useDataCleanup } from './hooks/useDataCleanup';
 
 function App() {
@@ -20,16 +21,36 @@ function App() {
   const [coupleId, setCoupleId] = useState('');
   const [inviteCoupleId, setInviteCoupleId] = useState(null);
   const [currentFeature, setCurrentFeature] = useState(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   // Enable automatic data cleanup
   useDataCleanup();
 
   useEffect(() => {
+    let authResolved = false;
+    let minTimeDone = false;
+
+    const maybeFinish = () => {
+      if (authResolved && minTimeDone) {
+        setIsAuthLoading(false);
+      }
+    };
+
+    const minTimer = setTimeout(() => {
+      minTimeDone = true;
+      maybeFinish();
+    }, 2500);
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
+      authResolved = true;
+      maybeFinish();
     });
 
-    return () => unsubscribe();
+    return () => {
+      clearTimeout(minTimer);
+      unsubscribe();
+    };
   }, []);
 
   // Check for invite link in URL
@@ -82,6 +103,11 @@ function App() {
     setActiveTab(tabId);
     setCurrentFeature(null);
   };
+
+  // Show loading screen while auth state and splash timer are in progress
+  if (isAuthLoading) {
+    return <LoadingScreen />;
+  }
 
   // Show invite page if inviteCoupleId is set
   if (inviteCoupleId) {
