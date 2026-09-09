@@ -138,7 +138,7 @@ function App() {
       case 'beranda':
         return <Beranda user={user} coupleId={coupleId} onNavigateToFeature={handleNavigateToFeature} />;
       case 'fitur':
-        return <Fitur coupleId={coupleId} />;
+        return <Fitur coupleId={coupleId} onNavigateToFeature={handleNavigateToFeature} />;
       case 'profile':
         return <Profile user={user} coupleId={coupleId} onLogout={handleLogout} onCoupleIdChange={handleCoupleIdChange} />;
       default:

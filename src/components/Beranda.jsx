@@ -3,6 +3,7 @@ import { Heart, Sparkles, MessageCircleHeart, Gift, Bell, Star, Moon } from 'luc
 import { motion, AnimatePresence } from 'framer-motion';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
+import './Beranda.css';
 
 export default function Beranda({ user, coupleId, onNavigateToFeature }) {
   const [profile, setProfile] = useState(null);
@@ -177,59 +178,37 @@ export default function Beranda({ user, coupleId, onNavigateToFeature }) {
             <p className="text-xs sm:text-sm md:text-base lg:text-lg opacity-90 mb-2 sm:mb-3 md:mb-4 lg:mb-6 px-2">
               Dalam riuh dan sunyinya dunia, kamu adalah satu-satunya tempat di mana aku selalu ingin pulang.
             </p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => onNavigateToFeature('photoGallery')}
-              className="bg-white text-pink-500 px-4 py-1.5 sm:px-6 sm:py-2 md:px-8 md:py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all text-xs sm:text-sm md:text-base"
-            >
-              Look at Me Now
-            </motion.button>
           </motion.div>
         </div>
       </div>
 
-      {/* Features Preview - Horizontal Heart Buttons */}
-      <div className="flex-1 px-3 sm:px-4 md:px-6 py-6 sm:py-8 md:py-12 z-10 flex items-center min-h-0">
-        <div className="max-w-3xl mx-auto flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-6 w-full">
-          {features.map((feature, index) => (
-            <motion.div
-              key={feature.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 }}
-              onClick={() => onNavigateToFeature(feature.id)}
-              className="relative cursor-pointer transition-all hover:scale-105 flex-shrink-0"
-              style={{ width: '110px', maxWidth: '130px' }}
-            >
-              {/* Heart Shape Button */}
-              <div className="relative w-full aspect-[1.2]">
-                <svg
-                  viewBox="0 0 100 90"
-                  className="w-full h-full drop-shadow-lg"
-                  style={{ filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))' }}
+      {/* Features Preview - 3D Social Media Hover Buttons */}
+      <div className="flex-1 px-3 sm:px-4 md:px-6 py-8 sm:py-10 md:py-12 z-10 flex items-center min-h-0">
+        <ul className="beranda-3d-list w-full max-w-3xl mx-auto">
+          {features.map((feature, index) => {
+            const Icon = feature.icon;
+            return (
+              <motion.li
+                key={feature.id}
+                className="beranda-3d-item"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <button
+                  type="button"
+                  className="beranda-3d-button"
+                  onClick={() => onNavigateToFeature(feature.id)}
                 >
-                  <path
-                    d="M50 85 C20 60 0 40 0 25 C0 10 10 0 25 0 C35 0 45 5 50 15 C55 5 65 0 75 0 C90 0 100 10 100 25 C100 40 80 60 50 85 Z"
-                    fill="url(#heartGradient)"
-                    className="hover:fill-pink-600 transition-colors"
-                  />
-                  <defs>
-                    <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" style={{ stopColor: '#FF69B4', stopOpacity: 1 }} />
-                      <stop offset="100%" style={{ stopColor: '#FF1493', stopOpacity: 1 }} />
-                    </linearGradient>
-                  </defs>
-                </svg>
-                {/* Icon and Text Overlay */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-                  <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 mb-1" />
-                  <h3 className="font-bold text-[9px] sm:text-[10px] md:text-xs text-center px-1 leading-tight">{feature.name}</h3>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                  <span className="icon-box">
+                    <Icon />
+                  </span>
+                  <span className="label">{feature.name}</span>
+                </button>
+              </motion.li>
+            );
+          })}
+        </ul>
       </div>
 
       {/* Love Quote - Fixed at bottom above navigation */}

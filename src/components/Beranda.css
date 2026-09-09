@@ -1,0 +1,186 @@
+.beranda-3d-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.beranda-3d-item {
+  list-style: none;
+}
+
+.beranda-3d-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: min(240px, 70vw);
+  height: 80px;
+  padding-left: 20px;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  transform: rotate(-20deg) skew(15deg);
+  transition: 0.5s;
+  box-shadow: -20px 20px 10px rgba(0, 0, 0, 0.4);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.beranda-3d-button::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: -20px;
+  width: 20px;
+  height: 100%;
+  background: #d1d1d1;
+  transform: skewY(-45deg);
+}
+
+.beranda-3d-button::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: -11px;
+  width: 100%;
+  height: 20px;
+  background: #d1d1d1;
+  transform: skewX(-45deg);
+}
+
+.beranda-3d-button .icon-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: #262626;
+  transition: 0.5s;
+  flex-shrink: 0;
+  margin-right: 14px;
+}
+
+.beranda-3d-button .icon-box svg {
+  width: 28px;
+  height: 28px;
+}
+
+.beranda-3d-button .label {
+  color: #262626;
+  letter-spacing: 1px;
+  transition: 0.5s;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.beranda-3d-button:hover,
+.beranda-3d-button:active,
+.beranda-3d-button:focus-visible {
+  transform: rotate(-20deg) skew(15deg) translate(14px, -10px);
+  box-shadow: -40px 40px 40px rgba(0, 0, 0, 0.45);
+}
+
+.beranda-3d-button:hover .icon-box,
+.beranda-3d-button:active .icon-box,
+.beranda-3d-button:focus-visible .icon-box,
+.beranda-3d-button:hover .label,
+.beranda-3d-button:active .label,
+.beranda-3d-button:focus-visible .label {
+  color: #fff;
+}
+
+/* Chat - pink */
+.beranda-3d-item:nth-child(1) .beranda-3d-button:hover,
+.beranda-3d-item:nth-child(1) .beranda-3d-button:active,
+.beranda-3d-item:nth-child(1) .beranda-3d-button:focus-visible {
+  background: #FF69B4;
+}
+.beranda-3d-item:nth-child(1) .beranda-3d-button:hover::before,
+.beranda-3d-item:nth-child(1) .beranda-3d-button:active::before,
+.beranda-3d-item:nth-child(1) .beranda-3d-button:focus-visible::before {
+  background: #E05594;
+}
+.beranda-3d-item:nth-child(1) .beranda-3d-button:hover::after,
+.beranda-3d-item:nth-child(1) .beranda-3d-button:active::after,
+.beranda-3d-item:nth-child(1) .beranda-3d-button:focus-visible::after {
+  background: #FF85C2;
+}
+
+/* Notifications - orange */
+.beranda-3d-item:nth-child(2) .beranda-3d-button:hover,
+.beranda-3d-item:nth-child(2) .beranda-3d-button:active,
+.beranda-3d-item:nth-child(2) .beranda-3d-button:focus-visible {
+  background: #F97316;
+}
+.beranda-3d-item:nth-child(2) .beranda-3d-button:hover::before,
+.beranda-3d-item:nth-child(2) .beranda-3d-button:active::before,
+.beranda-3d-item:nth-child(2) .beranda-3d-button:focus-visible::before {
+  background: #D06012;
+}
+.beranda-3d-item:nth-child(2) .beranda-3d-button:hover::after,
+.beranda-3d-item:nth-child(2) .beranda-3d-button:active::after,
+.beranda-3d-item:nth-child(2) .beranda-3d-button:focus-visible::after {
+  background: #FB923C;
+}
+
+/* Wishlist - yellow (gold) */
+.beranda-3d-item:nth-child(3) .beranda-3d-button:hover,
+.beranda-3d-item:nth-child(3) .beranda-3d-button:active,
+.beranda-3d-item:nth-child(3) .beranda-3d-button:focus-visible {
+  background: #EAB308;
+}
+.beranda-3d-item:nth-child(3) .beranda-3d-button:hover::before,
+.beranda-3d-item:nth-child(3) .beranda-3d-button:active::before,
+.beranda-3d-item:nth-child(3) .beranda-3d-button:focus-visible::before {
+  background: #C29A08;
+}
+.beranda-3d-item:nth-child(3) .beranda-3d-button:hover::after,
+.beranda-3d-item:nth-child(3) .beranda-3d-button:active::after,
+.beranda-3d-item:nth-child(3) .beranda-3d-button:focus-visible::after {
+  background: #FACC15;
+}
+
+/* Desktop: susun ke samping */
+@media (min-width: 768px) {
+  .beranda-3d-list {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 90px;
+    flex-wrap: wrap;
+  }
+
+  .beranda-3d-button {
+    transform: rotate(-25deg) skew(20deg);
+  }
+
+  .beranda-3d-button:hover,
+  .beranda-3d-button:active,
+  .beranda-3d-button:focus-visible {
+    transform: rotate(-25deg) skew(20deg) translate(20px, -15px);
+  }
+}
+
+@media (max-width: 480px) {
+  .beranda-3d-list {
+    gap: 28px;
+  }
+
+  .beranda-3d-button {
+    height: 70px;
+    padding-left: 16px;
+    transform: rotate(-20deg) skew(15deg);
+  }
+
+  .beranda-3d-button:hover,
+  .beranda-3d-button:active,
+  .beranda-3d-button:focus-visible {
+    transform: rotate(-20deg) skew(15deg) translate(14px, -10px);
+  }
+
+  .beranda-3d-button .label {
+    font-size: 13px;
+  }
+}

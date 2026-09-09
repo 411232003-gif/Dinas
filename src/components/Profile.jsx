@@ -59,10 +59,12 @@ export default function Profile({ user, coupleId, onLogout, onCoupleIdChange }) 
         onCoupleIdChange(userProfile.coupleId);
         
         // Load partner profile
-        const partnerDocRef = doc(db, 'users', userProfile.partnerId);
-        const partnerDoc = await getDoc(partnerDocRef);
-        if (partnerDoc.exists()) {
-          setPartnerProfile(partnerDoc.data());
+        if (userProfile.partnerId) {
+          const partnerDocRef = doc(db, 'users', userProfile.partnerId);
+          const partnerDoc = await getDoc(partnerDocRef);
+          if (partnerDoc.exists()) {
+            setPartnerProfile(partnerDoc.data());
+          }
         }
       } else {
         // Create a new couple for this user

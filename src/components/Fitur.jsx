@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MessageCircleHeart, Calendar, Heart, Gift, Gamepad2, BarChart3, Bell, ArrowLeft } from 'lucide-react';
+import { MessageCircleHeart, Calendar, Heart, Gift, Gamepad2, BarChart3, Bell, ArrowLeft, Image } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Chat from './Chat';
 import Timeline from './Timeline';
@@ -9,10 +9,11 @@ import Games from './Games';
 import IntimacyMeter from './IntimacyMeter';
 import Notifications from './Notifications';
 
-export default function Fitur({ coupleId, onBack }) {
+export default function Fitur({ coupleId, onNavigateToFeature }) {
   const [activeFeature, setActiveFeature] = useState(null);
 
   const features = [
+    { id: 'photoGallery', name: 'Foto Scroll', icon: Image, color: 'bg-pink-500', desc: 'Galeri foto 3D pasangan dari folder publik' },
     { id: 'chat', name: 'Private Chat', icon: MessageCircleHeart, color: 'bg-pink-500', desc: 'Chat eksklusif dengan love reactions, voice messages, dan photo sharing' },
     { id: 'timeline', name: 'Love Timeline', icon: Calendar, color: 'bg-purple-500', desc: 'Timeline momen spesial dengan anniversary counter' },
     { id: 'notes', name: 'Daily Love Notes', icon: Heart, color: 'bg-red-500', desc: 'Pesan romantis harian dengan love quotes otomatis' },
@@ -81,7 +82,13 @@ export default function Fitur({ coupleId, onBack }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                onClick={() => setActiveFeature(feature.id)}
+                onClick={() => {
+                  if (feature.id === 'photoGallery' && onNavigateToFeature) {
+                    onNavigateToFeature('photoGallery');
+                  } else {
+                    setActiveFeature(feature.id);
+                  }
+                }}
                 className="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg cursor-pointer transition-all hover:scale-105"
               >
                 <div className={`${feature.color} w-14 h-14 rounded-xl flex items-center justify-center mb-4`}>
