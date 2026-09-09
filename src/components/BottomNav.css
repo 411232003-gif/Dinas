@@ -1,0 +1,201 @@
+.bottom-nav {
+  --bn-bg-1: #0d0620;
+  --bn-bg-2: #2a1450;
+  --bn-bar-bg: #0c0c12;
+  --bn-accent: #9257ef;
+  --bn-accent-grad-btn: radial-gradient(circle at 35% 30%, #cba9ff, #9257ef 65%);
+  --bn-accent-grad-item: radial-gradient(circle at 32% 28%, #c9a3ff, #8b4fe0 70%);
+  --bn-text-dim: #8b86a0;
+  --bn-radius: 120px;
+
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 88px;
+  z-index: 50;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.bottom-nav__bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 88px;
+  background: var(--bn-bar-bg);
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  box-shadow: 0 -10px 50px rgba(0, 0, 0, 0.55);
+  -webkit-mask-image: radial-gradient(circle 46px at 50% 0px, transparent 98%, black 100%);
+  mask-image: radial-gradient(circle 46px at 50% 0px, transparent 98%, black 100%);
+}
+
+.bottom-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--bn-text-dim);
+  font-size: 13px;
+  padding: 6px;
+  transition: color 0.25s ease;
+}
+
+.bottom-nav__item svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  transition: stroke 0.25s ease, fill 0.25s ease;
+}
+
+.bottom-nav__item.active {
+  color: #c9a8ff;
+}
+
+.bottom-nav__item.active svg {
+  stroke: #c9a8ff;
+}
+
+.bottom-nav__dot {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.bottom-nav__radial {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 0;
+  height: 0;
+  z-index: 5;
+}
+
+.bottom-nav__toggle {
+  width: 75px;
+  height: 75px;
+  background: var(--bn-accent-grad-btn);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1.02);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-size: 25px;
+  cursor: pointer;
+  border: none;
+  z-index: 2;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 30px rgba(120, 60, 220, 0.25);
+}
+
+.bottom-nav__radial.open .bottom-nav__toggle {
+  transform: translate(-50%, -50%) scale(0.9);
+}
+
+.bottom-nav__toggle .bottom-nav__bar-h,
+.bottom-nav__toggle .bottom-nav__bar-v {
+  position: absolute;
+  width: 22px;
+  height: 2.6px;
+  background: #fff;
+  border-radius: 2px;
+  transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.bottom-nav__toggle .bottom-nav__bar-v {
+  transform: rotate(90deg);
+}
+
+.bottom-nav__radial.open .bottom-nav__toggle .bottom-nav__bar-h {
+  transform: rotate(45deg);
+}
+
+.bottom-nav__radial.open .bottom-nav__toggle .bottom-nav__bar-v {
+  transform: rotate(-45deg);
+}
+
+.bottom-nav__menu-item {
+  width: 70px;
+  height: 70px;
+  background: var(--bn-accent-grad-item);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  font-size: 20px;
+  cursor: pointer;
+  transition:
+    transform 0.6s cubic-bezier(0.935, 0, 0.34, 1.33),
+    background 0.3s,
+    color 0.3s;
+  box-shadow: 0 10px 30px rgba(120, 60, 220, 0.25);
+}
+
+.bottom-nav__menu-item:nth-child(3) {
+  transition-delay: 0ms;
+}
+
+.bottom-nav__menu-item:nth-child(4) {
+  transition-delay: 70ms;
+}
+
+.bottom-nav__menu-item:nth-child(5) {
+  transition-delay: 140ms;
+}
+
+.bottom-nav__menu-item svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  transition: transform 0.3s ease;
+}
+
+.bottom-nav__menu-item:hover svg {
+  transform: scale(1.2);
+}
+
+.bottom-nav__radial.open .bottom-nav__menu-item:nth-child(3) {
+  transform: translate(-50%, -50%) rotate(-150deg) translate(var(--bn-radius)) rotate(150deg);
+}
+
+.bottom-nav__radial.open .bottom-nav__menu-item:nth-child(4) {
+  transform: translate(-50%, -50%) rotate(-90deg) translate(var(--bn-radius)) rotate(90deg);
+}
+
+.bottom-nav__radial.open .bottom-nav__menu-item:nth-child(5) {
+  transform: translate(-50%, -50%) rotate(-30deg) translate(var(--bn-radius)) rotate(30deg);
+}
+
+@media (max-width: 420px) {
+  .bottom-nav__bar {
+    padding: 0 24px;
+  }
+}

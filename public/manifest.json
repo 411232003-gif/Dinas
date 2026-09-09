@@ -1,0 +1,24 @@
+{
+  "name": "LoveNotes",
+  "short_name": "LoveNotes",
+  "description": "Aplikasi romantis modern untuk pasangan yang sedang kasmaran",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFB6C1",
+  "theme_color": "#FF69B4",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
