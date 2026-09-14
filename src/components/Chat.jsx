@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { Send, Heart, Smile, Image as ImageIcon, Mic, User, X, Play, Pause, ArrowLeft } from 'lucide-react';
+import { Send, Heart, Smile, Image as ImageIcon, Mic, User, X, Play, Pause, ArrowLeft, Pencil, Trash2, Check, Volume2, VolumeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { db, auth } from '../firebase/config';
-import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, updateDoc, doc, getDoc } from 'firebase/firestore';
+import { playNotification, ringtones, showBrowserNotification } from '../utils/sounds.js';
+import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, updateDoc, deleteDoc, doc, getDoc } from 'firebase/firestore';
 
 export default function Chat({ coupleId, onBack }) {
   const [messages, setMessages] = useState([]);
@@ -18,6 +19,11 @@ export default function Chat({ coupleId, onBack }) {
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [editingMessageId, setEditingMessageId] = useState(null);
+  const [editText, setEditText] = useState('');
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [selectedRingtone, setSelectedRingtone] = useState('bell');
+  const [lastNotifiedMessageId, setLastNotifiedMessageId] = useState(null);
   const messagesEndRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -88,6 +94,37 @@ export default function Chat({ coupleId, onBack }) {
     return () => unsubscribe();
   }, [coupleId]);
 
+  // Request notification permission and listen for new partner messages
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if ('Notification' in window) {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (messages.length === 0) return;
+    const lastMessage = messages[messages.length - 1];
+    const isOwnMessage = lastMessage.senderId === auth.currentUser?.uid;
+
+    if (isOwnMessage) return;
+    if (lastNotifiedMessageId === lastMessage.id) return;
+
+    setLastNotifiedMessageId(lastMessage.id);
+
+    if (soundEnabled) {
+      playNotification(selectedRingtone);
+    }
+
+    if (document.hidden || document.visibilityState === 'hidden') {
+      showBrowserNotification(
+        'Pesan Baru dari Pasangan',
+        lastMessage.text || 'Mengirimkan pesan untukmu 💕',
+        '/logo.png'
+      );
+    }
+  }, [messages, soundEnabled, selectedRingtone, lastNotifiedMessageId]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -135,6 +172,44 @@ export default function Chat({ coupleId, onBack }) {
       }
     } catch (error) {
       console.error('Error adding reaction:', error);
+    }
+  };
+
+  const startEditMessage = (message) => {
+    if (message.type !== 'text') return;
+    setEditingMessageId(message.id);
+    setEditText(message.text || '');
+  };
+
+  const cancelEditMessage = () => {
+    setEditingMessageId(null);
+    setEditText('');
+  };
+
+  const saveEditMessage = async (messageId) => {
+    if (!editText.trim()) return;
+    try {
+      const messageRef = doc(db, 'couples', coupleId, 'messages', messageId);
+      await updateDoc(messageRef, {
+        text: editText.trim(),
+        editedAt: serverTimestamp()
+      });
+      setEditingMessageId(null);
+      setEditText('');
+    } catch (error) {
+      console.error('Error editing message:', error);
+      alert('Gagal mengubah pesan: ' + error.message);
+    }
+  };
+
+  const deleteMessage = async (messageId) => {
+    if (!window.confirm('Yakin ingin menghapus pesan ini?')) return;
+    try {
+      const messageRef = doc(db, 'couples', coupleId, 'messages', messageId);
+      await deleteDoc(messageRef);
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      alert('Gagal menghapus pesan: ' + error.message);
     }
   };
 
@@ -292,7 +367,7 @@ export default function Chat({ coupleId, onBack }) {
     <div className="flex flex-col h-[calc(100dvh-5rem)] sm:h-[calc(100dvh-5rem)] md:h-[calc(100vh-4rem)] pt-2 sm:pt-3 md:pt-4 pb-20 sm:pb-20 md:pb-4 px-2 sm:px-3 md:px-4 overflow-hidden bg-white">
       {/* Header with Back Button */}
       {onBack && (
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center justify-between gap-2 mb-3">
           <button
             onClick={onBack}
             className="flex items-center gap-2 text-gray-600 hover:text-pink-500 transition-colors"
@@ -300,6 +375,26 @@ export default function Chat({ coupleId, onBack }) {
             <ArrowLeft className="w-5 h-5" />
             <span className="font-medium text-sm">Kembali</span>
           </button>
+
+          <div className="flex items-center gap-2">
+            <select
+              value={selectedRingtone}
+              onChange={(e) => setSelectedRingtone(e.target.value)}
+              className="text-xs px-2 py-1 rounded-full border border-pink-200 bg-white text-gray-700 focus:outline-none focus:border-pink-500"
+            >
+              {Object.entries(ringtones).map(([key, label]) => (
+                <option key={key} value={key}>{label}</option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={() => setSoundEnabled(!soundEnabled)}
+              className={`p-2 rounded-full transition-colors ${soundEnabled ? 'text-pink-500 bg-pink-50' : 'text-gray-400 bg-gray-100'}`}
+              title={soundEnabled ? 'Suara aktif' : 'Suara mati'}
+            >
+              {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeOff className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
       )}
       <div className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 mb-2 sm:mb-3 md:mb-4 relative" style={{ backgroundImage: 'url(/chat-bg.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
@@ -335,7 +430,7 @@ export default function Chat({ coupleId, onBack }) {
                   <span className={`text-[10px] sm:text-xs font-bold text-gray-700 mb-1 block ${isOwnMessage ? 'text-right' : 'text-left'}`}>
                     {userProfile.name}
                   </span>
-                  
+
                   {/* Message Bubble */}
                   <div
                     className={`p-2 sm:p-3 rounded-lg ${
@@ -344,7 +439,36 @@ export default function Chat({ coupleId, onBack }) {
                         : 'bg-white shadow-md'
                     }`}
                   >
-                    {message.type === 'image' && message.imageData ? (
+                    {editingMessageId === message.id ? (
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="text"
+                          value={editText}
+                          onChange={(e) => setEditText(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') saveEditMessage(message.id);
+                            if (e.key === 'Escape') cancelEditMessage();
+                          }}
+                          className="flex-1 px-2 py-1 rounded text-sm text-gray-900 focus:outline-none"
+                          style={{ fontSize: '16px' }}
+                          autoFocus
+                        />
+                        <button
+                          type="button"
+                          onClick={() => saveEditMessage(message.id)}
+                          className="p-1 bg-white/90 rounded-full text-green-600 hover:bg-white"
+                        >
+                          <Check className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={cancelEditMessage}
+                          className="p-1 bg-white/90 rounded-full text-red-600 hover:bg-white"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : message.type === 'image' && message.imageData ? (
                       <img src={message.imageData} alt="Shared image" className="max-w-full rounded-lg mb-2" />
                     ) : message.type === 'audio' && message.audioData ? (
                       <audio controls className="w-full mb-2 h-8">
@@ -354,6 +478,11 @@ export default function Chat({ coupleId, onBack }) {
                     ) : (
                       <p className="text-xs sm:text-sm md:text-base text-gray-900 break-words">{message.text}</p>
                     )}
+                    {message.editedAt && (
+                      <span className={`text-[9px] sm:text-[10px] italic block mt-1 ${isOwnMessage ? 'text-green-100' : 'text-gray-400'}`}>
+                        diedit
+                      </span>
+                    )}
                     {message.reactions && message.reactions.length > 0 && (
                       <div className="flex gap-1 mt-2 flex-wrap">
                         {message.reactions.map((reaction, idx) => (
@@ -362,14 +491,39 @@ export default function Chat({ coupleId, onBack }) {
                       </div>
                     )}
                   </div>
-                  
-                  {/* Reaction Button */}
-                  <button
-                    onClick={() => setShowReactions(message.id)}
-                    className="absolute -top-3 right-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Heart className="w-5 h-5 text-love-pink-dark" />
-                  </button>
+
+                  {/* Own message actions */}
+                  {isOwnMessage && (
+                    <div className="absolute -top-3 right-0 flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                      {message.type === 'text' && (
+                        <button
+                          type="button"
+                          onClick={() => startEditMessage(message)}
+                          className="p-1 bg-white rounded-full shadow-sm text-blue-500 hover:text-blue-700"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => deleteMessage(message.id)}
+                        className="p-1 bg-white rounded-full shadow-sm text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Reaction Button for partner messages */}
+                  {!isOwnMessage && (
+                    <button
+                      onClick={() => setShowReactions(message.id)}
+                      className="absolute -top-3 right-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                    >
+                      <Heart className="w-5 h-5 text-love-pink-dark" />
+                    </button>
+                  )}
+
                   {showReactions === message.id && (
                     <motion.div
                       initial={{ opacity: 0, scale: 0.8 }}

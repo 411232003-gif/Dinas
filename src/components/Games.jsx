@@ -1,6 +1,8 @@
-import { useState } from 'react';
-import { Heart, Sparkles, Shuffle } from 'lucide-react';
+import { useState, lazy, Suspense } from 'react';
+import { Heart, Sparkles, Shuffle, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
+
+const MiniWorld = lazy(() => import('./MiniWorld'));
 
 const questions = [
   "Apa hal paling romantis yang pernah aku lakukan untukmu?",
@@ -35,7 +37,7 @@ const loveChallenges = [
   "Kirim emoji yang paling mewakili perasaanmu sekarang",
 ];
 
-export default function Games() {
+export default function Games({ coupleId }) {
   const [currentGame, setCurrentGame] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState('');
   const [showAnswer, setShowAnswer] = useState(false);
@@ -70,6 +72,24 @@ export default function Games() {
       setCurrentQuestion(randomChallenge);
     }
   };
+
+  if (currentGame === 'world') {
+    return (
+      <div className="p-4 pb-20 md:pb-4">
+        <div className="max-w-4xl mx-auto">
+          <Suspense
+            fallback={
+              <div className="h-[70vh] min-h-[420px] rounded-2xl bg-pink-100 flex items-center justify-center text-pink-500 font-medium">
+                Memuat dunia 3D...
+              </div>
+            }
+          >
+            <MiniWorld coupleId={coupleId} onBack={() => setCurrentGame(null)} />
+          </Suspense>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 pb-20 md:pb-4">
@@ -134,6 +154,23 @@ export default function Games() {
                   <div>
                     <h3 className="font-semibold text-gray-800">Love Challenge</h3>
                     <p className="text-sm text-gray-500">Tantangan romantis yang seru!</p>
+                  </div>
+                </div>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => startGame('world')}
+                className="w-full glass-card rounded-2xl p-6 text-left hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-gradient-to-r from-pink-500 to-rose-400 rounded-full">
+                    <Users className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800">Love World 3D</h3>
+                    <p className="text-sm text-gray-500">Jalan-jalan bareng di dunia 3D kalian</p>
                   </div>
                 </div>
               </motion.button>

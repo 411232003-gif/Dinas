@@ -14,6 +14,7 @@ import Wishlist from './components/Wishlist';
 import Notifications from './components/Notifications';
 import LoadingScreen from './components/LoadingScreen';
 import { useDataCleanup } from './hooks/useDataCleanup';
+import { requestFcmToken, listenForegroundMessages, showFcmNotification } from './utils/fcm';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -25,6 +26,18 @@ function App() {
 
   // Enable automatic data cleanup
   useDataCleanup();
+
+  // Initialize FCM when user is authenticated
+  useEffect(() => {
+    if (!user) return;
+    requestFcmToken(user.uid);
+    const unsubscribe = listenForegroundMessages((payload) => {
+      const title = payload.notification?.title || 'Pesan Baru';
+      const body = payload.notification?.body || 'Pasanganmu mengirim sesuatu 💕';
+      showFcmNotification(title, body, '/logo.png');
+    });
+    return () => unsubscribe();
+  }, [user]);
 
   useEffect(() => {
     let authResolved = false;

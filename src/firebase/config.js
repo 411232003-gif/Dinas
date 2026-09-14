@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
+import { getMessaging } from 'firebase/messaging';
 
 // Firebase Configuration
 // Ganti dengan config Firebase Anda dari Firebase Console
@@ -19,6 +20,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
+const messaging = getMessaging(app);
 
-export { db, auth, storage };
+export { db, auth, storage, messaging };
 export default app;

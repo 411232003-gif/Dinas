@@ -34,7 +34,7 @@ export default function Fitur({ coupleId, onNavigateToFeature }) {
       case 'wishlist':
         return <Wishlist coupleId={coupleId} />;
       case 'games':
-        return <Games />;
+        return <Games coupleId={coupleId} />;
       case 'stats':
         return <IntimacyMeter coupleId={coupleId} />;
       case 'notifications':
