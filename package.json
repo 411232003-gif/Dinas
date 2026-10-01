@@ -7,7 +7,12 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "game:server": "node --env-file-if-exists=.env --env-file-if-exists=.env.andin.local server/andin/index.js",
+    "game:dev": "node --env-file-if-exists=.env --env-file-if-exists=.env.andin.local server/andin/index.js --dev-auth",
+    "test:andin": "node --test tests/andin/*.test.js",
+    "test:andin:browser": "node --test tests/andin/browser.e2e.js",
+    "lint:andin": "eslint src/games/andin shared/andin server/andin tests/andin src/components/Games.jsx src/main.jsx"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
@@ -15,16 +20,19 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
     "firebase": "^12.14.0",
+    "firebase-admin": "14.5.0",
     "framer-motion": "^12.40.0",
     "lucide-react": "^1.20.0",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "tailwind-merge": "^3.6.0",
-    "three": "^0.186.0"
+    "three": "^0.186.0",
+    "ws": "8.21.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "1.55.1",
     "@tailwindcss/postcss": "^4.3.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

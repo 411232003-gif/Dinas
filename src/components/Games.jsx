@@ -1,8 +1,9 @@
 import { useState, lazy, Suspense } from 'react';
-import { Heart, Sparkles, Shuffle, Users } from 'lucide-react';
+import { Heart, Sparkles, Shuffle, Sprout, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const MiniWorld = lazy(() => import('./MiniWorld'));
+const AndinMultiplayer = lazy(() => import('../games/andin/AndinMultiplayer'));
 
 const questions = [
   "Apa hal paling romantis yang pernah aku lakukan untukmu?",
@@ -40,7 +41,7 @@ const loveChallenges = [
 export default function Games({ coupleId }) {
   const [currentGame, setCurrentGame] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState('');
-  const [showAnswer, setShowAnswer] = useState(false);
+  const [, setShowAnswer] = useState(false);
 
   const startGame = (gameType) => {
     setCurrentGame(gameType);
@@ -72,6 +73,14 @@ export default function Games({ coupleId }) {
       setCurrentQuestion(randomChallenge);
     }
   };
+
+  if (currentGame === 'andin-multiplayer') {
+    return (
+      <Suspense fallback={<div className="p-12 text-center text-emerald-700">Menyiapkan andin-multiplayer...</div>}>
+        <AndinMultiplayer onBack={() => setCurrentGame(null)} />
+      </Suspense>
+    );
+  }
 
   if (currentGame === 'world') {
     return (
@@ -107,6 +116,21 @@ export default function Games({ coupleId }) {
             </motion.div>
 
             <div className="space-y-4">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => startGame('andin-multiplayer')}
+                className="w-full rounded-2xl p-6 text-left border border-emerald-200 bg-gradient-to-br from-stone-50 to-emerald-50 hover:from-emerald-50 hover:to-lime-50 transition-all"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-emerald-700 rounded-2xl"><Sprout className="w-7 h-7 text-emerald-50" /></div>
+                  <div>
+                    <span className="text-[10px] tracking-widest uppercase text-emerald-600 font-semibold">Baru · Multiplayer 1–5 pemain</span>
+                    <h3 className="font-semibold text-emerald-950 text-lg">andin-multiplayer</h3>
+                    <p className="text-sm text-emerald-700/70">Bertani, tinggal bersama, dan jelajahi 4 peta desa.</p>
+                  </div>
+                </div>
+              </motion.button>
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
