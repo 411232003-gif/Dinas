@@ -26,3 +26,5 @@ dist-ssr
 .env
 .andin-data/
 .andin-test-artifacts/
+andin-service-account*.json
+*service-account*.json
