@@ -5,10 +5,9 @@ services:
     plan: free
     buildCommand: npm install
     startCommand: node server/andin/index.js
-    # Catatan tier gratis: server tidur setelah 15 menit tidak dipakai
-    # dan data file (.andin-data) hilang saat restart/redeploy.
-    # Untuk data persisten gratis, pakai ANDIN_STORAGE=firestore
-    # dengan database Firestore terpisah (lihat README).
+    # Data kebun disimpan di project Firebase kedua (gratis) supaya
+    # tetap persisten tanpa volume berbayar. Isi dua variable
+    # ANDIN_FIRESTORE_* dengan service account dari project kedua.
     envVars:
       - key: NODE_ENV
         value: production
@@ -19,4 +18,8 @@ services:
       - key: ANDIN_SERVICE_ACCOUNT_JSON
         sync: false
       - key: ANDIN_STORAGE
-        value: file
+        value: firestore
+      - key: ANDIN_FIRESTORE_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: ANDIN_FIRESTORE_PROJECT_ID
+        sync: false

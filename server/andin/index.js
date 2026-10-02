@@ -31,9 +31,23 @@ const firebase = () => getApps()[0] || initializeApp({ credential, projectId });
 const storage = process.env.ANDIN_STORAGE || 'file';
 let store;
 if (storage === 'firestore') {
+  const storeAccountJson = process.env.ANDIN_FIRESTORE_SERVICE_ACCOUNT_JSON;
+  let storeApp;
+  if (storeAccountJson) {
+    // Project Firebase kedua khusus data game (gratis, terpisah dari database utama aplikasi).
+    let storeCredential;
+    try {
+      storeCredential = cert(JSON.parse(storeAccountJson));
+    } catch (err) {
+      throw new Error(`Failed to parse ANDIN_FIRESTORE_SERVICE_ACCOUNT_JSON: ${err.message}`);
+    }
+    storeApp = initializeApp({ credential: storeCredential, projectId: process.env.ANDIN_FIRESTORE_PROJECT_ID }, 'andin-store');
+  } else {
+    storeApp = firebase();
+  }
   const database = process.env.ANDIN_FIRESTORE_DATABASE;
-  if (!database || database === '(default)') throw new Error('Use an isolated named database for ANDIN_FIRESTORE_DATABASE with all client access denied.');
-  store = new FirestoreStore(getFirestore(firebase(), database));
+  if (!storeAccountJson && (!database || database === '(default)')) throw new Error('Use an isolated named database for ANDIN_FIRESTORE_DATABASE with all client access denied.');
+  store = new FirestoreStore(getFirestore(storeApp, database || '(default)'));
 } else if (storage === 'file') {
   if (production && !process.env.ANDIN_DATA_DIR) {
     if (process.env.RAILWAY_ENVIRONMENT) {
