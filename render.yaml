@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: andin-server
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server/andin/index.js
+    # Catatan tier gratis: server tidur setelah 15 menit tidak dipakai
+    # dan data file (.andin-data) hilang saat restart/redeploy.
+    # Untuk data persisten gratis, pakai ANDIN_STORAGE=firestore
+    # dengan database Firestore terpisah (lihat README).
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ANDIN_ORIGINS
+        sync: false
+      - key: ANDIN_FIREBASE_PROJECT_ID
+        sync: false
+      - key: ANDIN_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: ANDIN_STORAGE
+        value: file

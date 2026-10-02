@@ -130,6 +130,27 @@ Environment variables yang diperlukan:
 
 > Catatan: untuk game andin-multiplayer di produksi, server WebSocket harus dideploy terpisah (Vercel tidak mendukung WebSocket server persistent) dan set `VITE_ANDIN_WS_URL`.
 
+### Deploy server game ke Railway
+
+1. Push kode ke GitHub, lalu di [Railway](https://railway.app) pilih **New Project → Deploy from GitHub repo**
+2. `railway.toml` sudah otomatis mengatur start command (`node server/andin/index.js`)
+3. Di dashboard Railway → **Variables**, isi:
+
+   | Variable | Isi |
+   |---|---|
+   | `NODE_ENV` | `production` |
+   | `ANDIN_ORIGINS` | `https://love-notes-lime.vercel.app` (domain Vercel kamu) |
+   | `ANDIN_FIREBASE_PROJECT_ID` | `lovenotes-9f9c1` |
+   | `ANDIN_SERVICE_ACCOUNT_JSON` | Seluruh isi file `andin-service-account.json` (copy-paste) |
+   | `ANDIN_DATA_DIR` | `/data` (opsional, butuh Volume agar data kebun tidak hilang) |
+
+4. Setelah deploy, salin domain Railway (misal `andin-server.up.railway.app`)
+5. Di **Vercel** → Project Settings → Environment Variables, tambahkan:
+   `VITE_ANDIN_WS_URL` = `wss://andin-server.up.railway.app/api/andin/ws`
+6. Redeploy frontend Vercel → game bisa dimainkan dari mana saja, laptop tidak perlu menyala
+
+> 💡 Tanpa Volume, data kebun reset saat server restart/redeploy. Kalau mau persisten gratis, alternatifnya `ANDIN_STORAGE=firestore` dengan database Firestore terpisah.
+
 ## 📱 Install sebagai PWA
 
 Di mobile:

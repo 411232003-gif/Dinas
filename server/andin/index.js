@@ -1,4 +1,4 @@
-import { initializeApp, applicationDefault, getApps } from 'firebase-admin/app';
+import { initializeApp, applicationDefault, cert, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { createGameServer } from './server.js';
@@ -8,11 +8,26 @@ import { GameError } from './room.js';
 const production = process.env.NODE_ENV === 'production';
 const devAuth = process.argv.includes('--dev-auth');
 if (production && devAuth) throw new Error('Development authentication is forbidden in production.');
-const origins = (process.env.ANDIN_ORIGINS || (production ? '' : 'http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173,http://127.0.0.1:4173')).split(',').map((origin) => origin.trim()).filter(Boolean);
+const defaultOrigins = production
+  ? (process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : '')
+  : 'http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173,http://127.0.0.1:4173';
+const origins = (process.env.ANDIN_ORIGINS || defaultOrigins).split(',').map((origin) => origin.trim()).filter(Boolean);
 if (!origins.length || origins.includes('*')) throw new Error('Set ANDIN_ORIGINS to the exact allowed frontend origins.');
 if (devAuth && origins.some((origin) => !['localhost', '127.0.0.1'].includes(new URL(origin).hostname))) throw new Error('Development authentication only permits localhost origins.');
 const projectId = process.env.ANDIN_FIREBASE_PROJECT_ID || process.env.VITE_FIREBASE_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT;
-const firebase = () => getApps()[0] || initializeApp({ credential: applicationDefault(), projectId });
+const serviceAccountJson = process.env.ANDIN_SERVICE_ACCOUNT_JSON;
+let credential;
+if (serviceAccountJson) {
+  try {
+    credential = cert(JSON.parse(serviceAccountJson));
+  } catch (err) {
+    console.error('Failed to parse ANDIN_SERVICE_ACCOUNT_JSON:', err.message);
+    credential = applicationDefault();
+  }
+} else {
+  credential = applicationDefault();
+}
+const firebase = () => getApps()[0] || initializeApp({ credential, projectId });
 const storage = process.env.ANDIN_STORAGE || 'file';
 let store;
 if (storage === 'firestore') {
@@ -20,7 +35,13 @@ if (storage === 'firestore') {
   if (!database || database === '(default)') throw new Error('Use an isolated named database for ANDIN_FIRESTORE_DATABASE with all client access denied.');
   store = new FirestoreStore(getFirestore(firebase(), database));
 } else if (storage === 'file') {
-  if (production && !process.env.ANDIN_DATA_DIR) throw new Error('Set ANDIN_DATA_DIR to a persistent volume in production.');
+  if (production && !process.env.ANDIN_DATA_DIR) {
+    if (process.env.RAILWAY_ENVIRONMENT) {
+      console.warn('⚠️ [ANDIN] ANDIN_DATA_DIR belum diset ke persistent volume di Railway. Menggunakan .andin-data (data reset jika server restart/redeploy).');
+    } else {
+      throw new Error('Set ANDIN_DATA_DIR to a persistent volume in production.');
+    }
+  }
   store = new FileStore(process.env.ANDIN_DATA_DIR || '.andin-data');
 } else throw new Error('ANDIN_STORAGE must be file or firestore.');
 

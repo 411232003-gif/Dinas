@@ -3,11 +3,15 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "start": "node server/andin/index.js",
     "game:server": "node --env-file-if-exists=.env --env-file-if-exists=.env.andin.local server/andin/index.js",
     "game:dev": "node --env-file-if-exists=.env --env-file-if-exists=.env.andin.local server/andin/index.js --dev-auth",
     "test:andin": "node --test tests/andin/*.test.js",
